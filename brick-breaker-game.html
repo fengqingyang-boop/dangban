@@ -171,7 +171,7 @@
                     dy: -4
                 },
                 bricks: [],
-                brickRows: 3,
+                brickRows: 1,
                 brickCols: 5,
                 brickWidth: 140,
                 brickHeight: 30,
@@ -238,15 +238,26 @@
                         this.keys[e.key] = false;
                     });
                     
-                    // 鼠标事件
-                    this.canvas.addEventListener('mousemove', (e) => {
+                    // 鼠标事件 - 在document上监听，确保即使鼠标移出画布也能跟踪位置
+                    document.addEventListener('mousemove', (e) => {
                         const rect = this.canvas.getBoundingClientRect();
                         const mouseX = e.clientX - rect.left;
                         
-                        // 限制挡板在画布内
-                        if (mouseX > this.paddle.width / 2 && mouseX < this.canvas.width - this.paddle.width / 2) {
-                            this.paddle.x = mouseX - this.paddle.width / 2;
+                        // 计算挡板目标位置
+                        let targetX = mouseX - this.paddle.width / 2;
+                        
+                        // 限制挡板在画布边界内
+                        // 如果鼠标在画布左边外，挡板移到最左边
+                        if (mouseX < this.paddle.width / 2) {
+                            targetX = 0;
                         }
+                        // 如果鼠标在画布右边外，挡板移到最右边
+                        else if (mouseX > this.canvas.width - this.paddle.width / 2) {
+                            targetX = this.canvas.width - this.paddle.width;
+                        }
+                        
+                        // 更新挡板位置
+                        this.paddle.x = targetX;
                     });
                     
                     // 点击画布开始游戏
